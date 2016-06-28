@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <pomodoro.h>
 #include <QApplication>
+#include <memory>
 namespace Ui {
 class MainWindow;
 }
@@ -13,14 +14,14 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(Pomodoro *pom, QWidget *parent = 0);
+    explicit MainWindow(std::weak_ptr<Pomodoro> pom, QWidget *parent = 0);
     ~MainWindow();
 
 public slots:
     void exit();
     void pomodoroStateChanged(State state);
 private:
-    Pomodoro *pom;
+    std::weak_ptr<Pomodoro> pom;
     Ui::MainWindow *ui;
 };
 

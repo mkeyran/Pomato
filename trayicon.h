@@ -7,6 +7,8 @@
 #include <QMenu>
 #include <QMediaPlayer>
 #include <mainwindow.h>
+#include <memory>
+#include <settings.h>
 class TrayIcon : public QObject
 {
     Q_OBJECT
@@ -21,7 +23,7 @@ public slots:
     void trayActivated(QSystemTrayIcon::ActivationReason reason);
 private:
     void paintText(QString text, QColor color=Qt::white);
-    Pomodoro* pom;
+    std::shared_ptr<Pomodoro> pom;
     QSystemTrayIcon tray;
     QPixmap pixmap;
     QIcon icon;
@@ -30,7 +32,7 @@ private:
     QMediaPlayer notification;
     QMediaPlayer ticks;
     MainWindow *mainwindow;
-
+    Settings *settings;
 };
 
 #endif // TRAYICON_H

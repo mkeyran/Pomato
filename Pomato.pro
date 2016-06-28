@@ -7,7 +7,8 @@ CONFIG += c++11
 SOURCES += main.cpp \
     pomodoro.cpp \
     trayicon.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    settings.cpp
 
 RESOURCES += qml.qrc
 
@@ -20,7 +21,8 @@ include(deployment.pri)
 HEADERS += \
     pomodoro.h \
     trayicon.h \
-    mainwindow.h
+    mainwindow.h \
+    settings.h
 
 QMAKE_CXXFLAGS += --std=c++11
 

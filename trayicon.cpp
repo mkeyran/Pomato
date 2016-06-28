@@ -6,17 +6,19 @@
 #include <QDebug>
 TrayIcon::TrayIcon(QObject *parent) : QObject(parent)
 {
-    pom = new Pomodoro(this);
+    pom = std::make_shared<Pomodoro>(this);
     mainwindow = new MainWindow(pom);
-    connect(pom,SIGNAL(remainingChanged(qint32)),this,SLOT(remainingChanged(qint32)));
-    connect(pom,SIGNAL(stateChanged(State)),this,SLOT(stateChanged(State)));
+    settings = new Settings(pom, this);
+    connect(pom.get(),SIGNAL(remainingChanged(qint32)),this,SLOT(remainingChanged(qint32)));
+    connect(pom.get(),SIGNAL(stateChanged(State)),this,SLOT(stateChanged(State)));
     pixmap.load(":/icons/tomato.svg");
     icon.addPixmap(pixmap.scaled(QSize(32,32),Qt::KeepAspectRatio));
     tray.setIcon(icon);
-    menu.addAction (tr ("Start"),this->pom,SLOT(start()));
-    menu.addAction (tr ("Pause"),this->pom,SLOT(pause()));
+    menu.addAction (tr ("Start"),this->pom.get(),SLOT(start()));
+    menu.addAction (tr ("Pause"),this->pom.get(),SLOT(pause()));
     menu.actions()[1]->setVisible(false);
-    menu.addAction (tr ("Stop"),this->pom,SLOT(stop()));
+    menu.addAction (tr ("Stop"),this->pom.get(),SLOT(stop()));
+    menu.actions()[2]->setVisible(false);
     menu.addSeparator();
     menu.addAction (tr ("Exit"), this, SLOT(exit()));
     tray.setContextMenu(&menu);
@@ -59,11 +61,12 @@ void TrayIcon::stateChanged(State state)
         paintText("॥");
         menu.actions()[1]->setVisible(true);
         menu.actions()[1]->setText("Continue");
-        menu.actions()[0]->setVisible(true);
+        menu.actions()[0]->setVisible(false);
         break;
     case State::STOPPED:
         paintText("");
         menu.actions()[1]->setVisible(false);
+        menu.actions()[2]->setVisible(false);
         menu.actions()[0]->setVisible(true);
         break;
     case State::ACTIVE:
@@ -71,9 +74,12 @@ void TrayIcon::stateChanged(State state)
                 pom->prevState() == State::LONG_BREAK)
             tray.showMessage(tr("It's time for a new pomodoro"),
                              tr("Get to work!"));
-        menu.actions()[1]->setVisible(true);
-        menu.actions()[1]->setText("Pause");
+        if (pom->pauseIsAllowed()){
+            menu.actions()[1]->setVisible(true);
+            menu.actions()[1]->setText("Pause");
+        }
         menu.actions()[0]->setVisible(false);
+        menu.actions()[2]->setVisible(true);
         break;
     case State::SHORT_BREAK:
     case State::LONG_BREAK:

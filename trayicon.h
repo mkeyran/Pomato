@@ -5,16 +5,18 @@
 #include <pomodoro.h>
 #include <QIcon>
 #include <QMenu>
+#include <QMediaPlayer>
+#include <mainwindow.h>
 class TrayIcon : public QObject
 {
     Q_OBJECT
 public:
-    explicit TrayIcon(Pomodoro* pom, QObject *parent = 0);
-
+    explicit TrayIcon(QObject *parent = 0);
+    ~TrayIcon();
 signals:
 public slots:
     void remainingChanged(qint32 rem);
-    void statusChanged(Status status);
+    void stateChanged(State state);
     void exit();
     void trayActivated(QSystemTrayIcon::ActivationReason reason);
 private:
@@ -25,6 +27,10 @@ private:
     QIcon icon;
     QString oldtext;
     QMenu menu;
+    QMediaPlayer notification;
+    QMediaPlayer ticks;
+    MainWindow *mainwindow;
+
 };
 
 #endif // TRAYICON_H

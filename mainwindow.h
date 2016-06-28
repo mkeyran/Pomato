@@ -3,7 +3,6 @@
 
 #include <QMainWindow>
 #include <pomodoro.h>
-#include <trayicon.h>
 #include <QApplication>
 namespace Ui {
 class MainWindow;
@@ -14,14 +13,14 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(Pomodoro *pom, QWidget *parent = 0);
     ~MainWindow();
 
 public slots:
     void exit();
+    void pomodoroStateChanged(State state);
 private:
-    Pomodoro pom;
-    TrayIcon tray;
+    Pomodoro *pom;
     Ui::MainWindow *ui;
 };
 

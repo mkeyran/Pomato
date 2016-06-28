@@ -4,11 +4,12 @@
 #include <QApplication>
 #include <mainwindow.h>
 #include <QDebug>
-TrayIcon::TrayIcon(Pomodoro *pom, QObject *parent) : QObject(parent)
+TrayIcon::TrayIcon(QObject *parent) : QObject(parent)
 {
-    this->pom=pom;
+    pom = new Pomodoro(this);
+    mainwindow = new MainWindow(pom);
     connect(pom,SIGNAL(remainingChanged(qint32)),this,SLOT(remainingChanged(qint32)));
-    connect(pom,SIGNAL(statusChanged(Status)),this,SLOT(statusChanged(Status)));
+    connect(pom,SIGNAL(stateChanged(State)),this,SLOT(stateChanged(State)));
     pixmap.load(":/icons/tomato.svg");
     icon.addPixmap(pixmap.scaled(QSize(32,32),Qt::KeepAspectRatio));
     tray.setIcon(icon);
@@ -24,6 +25,11 @@ TrayIcon::TrayIcon(Pomodoro *pom, QObject *parent) : QObject(parent)
     tray.show();
 }
 
+TrayIcon::~TrayIcon()
+{
+    delete mainwindow;
+}
+
 void TrayIcon::remainingChanged(qint32 rem)
 {
     int minutes_rounded = std::ceil(1.*(rem%3600)/60);
@@ -31,13 +37,13 @@ void TrayIcon::remainingChanged(qint32 rem)
     int minutes = (rem%3600)/60;
     int seconds = rem%60;
 
-    switch (pom->status()) {
-    case Status::ACTIVE:
+    switch (pom->state()) {
+    case State::ACTIVE:
         paintText(QString::number(minutes_rounded));
         tray.setToolTip(tr("Active\nTime remaining: %1 h %2 m %3 s").arg(hours).arg(minutes).arg(seconds));
         break;
-    case Status::SHORT_BREAK:
-    case Status::LONG_BREAK:
+    case State::SHORT_BREAK:
+    case State::LONG_BREAK:
         paintText(QString::number(minutes_rounded),Qt::green);
         break;
     default:
@@ -45,22 +51,41 @@ void TrayIcon::remainingChanged(qint32 rem)
     }
 }
 
-void TrayIcon::statusChanged(Status status)
+void TrayIcon::stateChanged(State state)
 {
     pixmap.load(":/icons/tomato.svg");
-    switch (status) {
-    case Status::PAUSED:
+    switch (state) {
+    case State::PAUSED:
         paintText("॥");
         menu.actions()[1]->setVisible(true);
         menu.actions()[1]->setText("Continue");
+        menu.actions()[0]->setVisible(true);
         break;
-    case Status::STOPPED:
+    case State::STOPPED:
         paintText("");
         menu.actions()[1]->setVisible(false);
+        menu.actions()[0]->setVisible(true);
+        break;
+    case State::ACTIVE:
+        if (pom->prevState() == State::SHORT_BREAK||
+                pom->prevState() == State::LONG_BREAK)
+            tray.showMessage(tr("It's time for a new pomodoro"),
+                             tr("Get to work!"));
+        menu.actions()[1]->setVisible(true);
+        menu.actions()[1]->setText("Pause");
+        menu.actions()[0]->setVisible(false);
+        break;
+    case State::SHORT_BREAK:
+    case State::LONG_BREAK:
+        tray.showMessage(tr("Have a break!"),
+                         tr(""));
+        menu.actions()[1]->setVisible(false);
+        menu.actions()[0]->setVisible(true);
         break;
     default:
         menu.actions()[1]->setVisible(true);
         menu.actions()[1]->setText("Pause");
+        menu.actions()[0]->setVisible(true);
         break;
     }
 }
@@ -72,11 +97,10 @@ void TrayIcon::exit()
 
 void TrayIcon::trayActivated(QSystemTrayIcon::ActivationReason reason)
 {
-    MainWindow * par = qobject_cast<MainWindow*>(parent());
     switch (reason) {
     case QSystemTrayIcon::Trigger:
-        if (par->isVisible()) par->hide();
-        else par->show();
+        if (mainwindow->isVisible()) mainwindow->hide();
+        else mainwindow->show();
         break;
     default:
         break;

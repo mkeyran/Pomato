@@ -33,6 +33,10 @@ void Settings::setDuration(quint32 duration)
 
     m_duration = duration;
     settings.setValue(m_durationKey, duration);
+    std::shared_ptr<Pomodoro> pom_lock = pom.lock();
+    if (pom_lock){
+        pom_lock->setPomodoroDuration(m_duration);
+    }
     emit durationChanged(duration);
 }
 
@@ -62,6 +66,10 @@ void Settings::setShortBreakDuration(quint32 shortBreakDuration)
 
     m_shortBreakDuration = shortBreakDuration;
     settings.setValue(m_shortBreakDurationKey, shortBreakDuration);
+    std::shared_ptr<Pomodoro> pom_lock = pom.lock();
+    if (pom_lock){
+        pom_lock->setShortBreakDuration(m_shortBreakDuration);
+    }
     emit shortBreakDurationChanged(shortBreakDuration);
 }
 
@@ -72,6 +80,10 @@ void Settings::setLongBreakDuration(quint32 longBreakDuration)
 
     m_longBreakDuration = longBreakDuration;
     settings.setValue(m_longBreakDurationKey, longBreakDuration);
+    std::shared_ptr<Pomodoro> pom_lock = pom.lock();
+    if (pom_lock){
+        pom_lock->setLongBreakDuration(m_longBreakDuration);
+    }
     emit longBreakDurationChanged(longBreakDuration);
 }
 
@@ -82,6 +94,10 @@ void Settings::setAutoContinue(bool autoContinue)
 
     m_autoContinue = autoContinue;
     settings.setValue(m_autoContinueKey, autoContinue);
+    std::shared_ptr<Pomodoro> pom_lock = pom.lock();
+    if (pom_lock){
+        pom_lock->setAutoContinue(m_autoContinue);
+    }
     emit autoContinueChanged(autoContinue);
 }
 
@@ -92,6 +108,10 @@ void Settings::setAllowPause(bool allowPause)
 
     m_allowPause = allowPause;
     settings.setValue(m_allowPauseKey, allowPause);
+    std::shared_ptr<Pomodoro> pom_lock = pom.lock();
+    if (pom_lock){
+        pom_lock->setPauseIsAllowed(m_allowPause);
+    }
     emit allowPauseChanged(allowPause);
 }
 

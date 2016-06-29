@@ -8,7 +8,7 @@ TrayIcon::TrayIcon(QObject *parent) : QObject(parent)
 {
     pom = std::make_shared<Pomodoro>(this);
     mainwindow = new MainWindow(pom);
-    settings = new Settings(pom, this);
+    settings = std::make_shared<Settings>(pom, this);
     connect(pom.get(),SIGNAL(remainingChanged(qint32)),this,SLOT(remainingChanged(qint32)));
     connect(pom.get(),SIGNAL(stateChanged(State)),this,SLOT(stateChanged(State)));
     pixmap.load(":/icons/tomato.svg");
@@ -20,6 +20,7 @@ TrayIcon::TrayIcon(QObject *parent) : QObject(parent)
     menu.addAction (tr ("Stop"),this->pom.get(),SLOT(stop()));
     menu.actions()[2]->setVisible(false);
     menu.addSeparator();
+    menu.addAction (tr ("Settings"), this, SLOT(showSettingsDialog()));
     menu.addAction (tr ("Exit"), this, SLOT(exit()));
     tray.setContextMenu(&menu);
     connect(&tray,SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
@@ -29,6 +30,7 @@ TrayIcon::TrayIcon(QObject *parent) : QObject(parent)
 
 TrayIcon::~TrayIcon()
 {
+    if (settingsDialog) delete settingsDialog;
     delete mainwindow;
 }
 
@@ -111,6 +113,14 @@ void TrayIcon::trayActivated(QSystemTrayIcon::ActivationReason reason)
     default:
         break;
     }
+}
+
+void TrayIcon::showSettingsDialog()
+{
+    if (!settingsDialog){
+        settingsDialog = new SettingsDialog (settings);
+    }
+    settingsDialog->show();
 }
 
 

@@ -32,6 +32,7 @@ void Settings::setDuration(quint32 duration)
         return;
 
     m_duration = duration;
+    settings.setValue(m_durationKey, duration);
     emit durationChanged(duration);
 }
 
@@ -60,6 +61,7 @@ void Settings::setShortBreakDuration(quint32 shortBreakDuration)
         return;
 
     m_shortBreakDuration = shortBreakDuration;
+    settings.setValue(m_shortBreakDurationKey, shortBreakDuration);
     emit shortBreakDurationChanged(shortBreakDuration);
 }
 
@@ -69,6 +71,7 @@ void Settings::setLongBreakDuration(quint32 longBreakDuration)
         return;
 
     m_longBreakDuration = longBreakDuration;
+    settings.setValue(m_longBreakDurationKey, longBreakDuration);
     emit longBreakDurationChanged(longBreakDuration);
 }
 
@@ -78,6 +81,7 @@ void Settings::setAutoContinue(bool autoContinue)
         return;
 
     m_autoContinue = autoContinue;
+    settings.setValue(m_autoContinueKey, autoContinue);
     emit autoContinueChanged(autoContinue);
 }
 
@@ -87,6 +91,7 @@ void Settings::setAllowPause(bool allowPause)
         return;
 
     m_allowPause = allowPause;
+    settings.setValue(m_allowPauseKey, allowPause);
     emit allowPauseChanged(allowPause);
 }
 

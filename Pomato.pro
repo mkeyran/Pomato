@@ -8,7 +8,8 @@ SOURCES += main.cpp \
     pomodoro.cpp \
     trayicon.cpp \
     mainwindow.cpp \
-    settings.cpp
+    settings.cpp \
+    settingsdialog.cpp
 
 RESOURCES += qml.qrc
 
@@ -22,9 +23,11 @@ HEADERS += \
     pomodoro.h \
     trayicon.h \
     mainwindow.h \
-    settings.h
+    settings.h \
+    settingsdialog.h
 
 QMAKE_CXXFLAGS += --std=c++11
 
 FORMS += \
-    mainwindow.ui
+    mainwindow.ui \
+    settingsdialog.ui

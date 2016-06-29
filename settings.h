@@ -139,8 +139,8 @@ QString m_pomodoroSound;
 
 template <class T>
 void trytoget(const char *key, T& var, const T& def){
-    QVariant val = settings.value(key, def);
-    if (settings.contains(key) && val.canConvert<T>()){
+    QVariant val = settings.value(key);
+    if (!val.isNull() && val.canConvert<T>()){
         var = val.value<T>();
     }
     else {
@@ -148,6 +148,8 @@ void trytoget(const char *key, T& var, const T& def){
         settings.setValue(key,def);
     }
 }
+
+
 std::weak_ptr<Pomodoro> pom;
 QSettings settings;
 };

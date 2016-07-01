@@ -48,9 +48,11 @@ void TrayIcon::remainingChanged(qint32 rem)
         break;
     case State::SHORT_BREAK:
     case State::LONG_BREAK:
+        tray.setToolTip(tr("Break\nTime remaining: %1 h %2 m %3 s").arg(hours).arg(minutes).arg(seconds));
         paintText(QString::number(minutes_rounded),Qt::green);
         break;
     default:
+        tray.setToolTip("");
         break;
     }
 }

@@ -1,12 +1,19 @@
 #include "settingsdialog.h"
 #include "ui_settingsdialog.h"
 #include <QTime>
+#include <QFileDialog>
 SettingsDialog::SettingsDialog(std::weak_ptr<Settings> settings, QWidget *parent) :
     QDialog(parent),
     settings(settings),
     ui(new Ui::SettingsDialog)
 {
     ui->setupUi(this);
+    connect(ui->newPomodoroSoundEnabled,SIGNAL(stateChanged(int)),this,SLOT(enableSounds()));
+    connect(ui->breakSoundEnabled,SIGNAL(stateChanged(int)),this,SLOT(enableSounds()));
+    connect(ui->tickingSoundEnabled,SIGNAL(stateChanged(int)),this,SLOT(enableSounds()));
+    connect(ui->chooseBrakeSoundPB,SIGNAL(clicked(bool)),this,SLOT(chooseBreakSound()));
+    connect(ui->chooseNewPomodoroSoundPB,SIGNAL(clicked(bool)),this,SLOT(chooseNewPomodoroSound()));
+    connect(ui->chooseTickingSoundPB,SIGNAL(clicked(bool)),this,SLOT(chooseTickingSound()));
     reset();
 }
 
@@ -30,6 +37,12 @@ void SettingsDialog::accept()
         settings_lock->setLongBreakDuration(
                     ui->longBreakDurationTE->time().msecsSinceStartOfDay()
                     );
+        settings_lock->setPlayBreakSound(ui->breakSoundEnabled->isChecked());
+        settings_lock->setPlayTicks(ui->tickingSoundEnabled->isChecked());
+        settings_lock->setPlayPomodoroSound(ui->newPomodoroSoundEnabled->isChecked());
+        settings_lock->setTicksSound(QUrl(ui->tickingSoundLE->text()));
+        settings_lock->setBreakSound(QUrl(ui->breakSoundLE->text()));
+        settings_lock->setPomodoroSound(QUrl(ui->newPomodoroSoundLE->text()));
     }
     QDialog::accept();
 }
@@ -49,8 +62,49 @@ void SettingsDialog::reset()
         ui->longBreakDurationTE->setTime(QTime::fromMSecsSinceStartOfDay(
                                              settings_lock->longBreakDuration()));
         ui->shortBreakDurationTE->setTime(QTime::fromMSecsSinceStartOfDay(
-                                             settings_lock->shortBreakDuration()));
+                                              settings_lock->shortBreakDuration()));
         ui->pomodoroDurationTE->setTime(QTime::fromMSecsSinceStartOfDay(
-                                             settings_lock->duration()));
+                                            settings_lock->duration()));
+        ui->breakSoundEnabled->setChecked(settings_lock->playBreakSound());
+        ui->tickingSoundEnabled->setChecked(settings_lock->playTicks());
+        ui->newPomodoroSoundEnabled->setChecked(settings_lock->playPomodoroSound());
+        ui->newPomodoroSoundLE->setText(settings_lock->pomodoroSound().toString());
+        ui->breakSoundLE->setText(settings_lock->breakSound().toString());
+        ui->tickingSoundLE->setText(settings_lock->ticksSound().toString());
     }
 }
+
+void SettingsDialog::enableSounds()
+{
+    ui->chooseBrakeSoundPB->setEnabled(ui->breakSoundEnabled->isChecked());
+    ui->breakSoundLE->setEnabled(ui->breakSoundEnabled->isChecked());
+    ui->chooseTickingSoundPB->setEnabled(ui->tickingSoundEnabled->isChecked());
+    ui->tickingSoundLE->setEnabled(ui->tickingSoundEnabled->isChecked());
+    ui->chooseNewPomodoroSoundPB->setEnabled(ui->newPomodoroSoundEnabled->isChecked());
+    ui->newPomodoroSoundLE->setEnabled(ui->newPomodoroSoundEnabled->isChecked());
+}
+
+void SettingsDialog::chooseTickingSound()
+{
+    QUrl url = QFileDialog::getOpenFileUrl(this, "Choose sound file",ui->tickingSoundLE->text(), "Sound Files (*.mp3 *.wav *.ogg *.flac)");
+    if (url.isValid()){
+        ui->tickingSoundLE->setText(url.toString());
+    }
+}
+
+void SettingsDialog::chooseNewPomodoroSound()
+{
+    QUrl url = QFileDialog::getOpenFileUrl(this, "Choose sound file", ui->newPomodoroSoundLE->text(), "Sound Files (*.mp3 *.wav *.ogg *.flac)");
+    if (url.isValid()){
+        ui->newPomodoroSoundLE->setText(url.toString());
+    }
+}
+
+void SettingsDialog::chooseBreakSound()
+{
+    QUrl url = QFileDialog::getOpenFileUrl(this, "Choose sound file", ui->breakSoundLE->text(), "Sound Files (*.mp3 *.wav *.ogg *.flac)");
+    if (url.isValid()){
+        ui->breakSoundLE->setText(url.toString());
+    }
+}
+

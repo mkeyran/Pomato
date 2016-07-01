@@ -20,6 +20,10 @@ private slots:
     void accept();
     void reject();
     void reset();
+    void enableSounds();
+    void chooseTickingSound();
+    void chooseNewPomodoroSound();
+    void chooseBreakSound();
 
 private:
     std::weak_ptr<Settings> settings;

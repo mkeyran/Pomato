@@ -7,8 +7,9 @@
 TrayIcon::TrayIcon(QObject *parent) : QObject(parent)
 {
     pom = std::make_shared<Pomodoro>(this);
+    sounds = std::make_shared<Sounds>(this);
+    settings = std::make_shared<Settings>(pom, sounds, this);
     mainwindow = new MainWindow(pom);
-    settings = std::make_shared<Settings>(pom, this);
     connect(pom.get(),SIGNAL(remainingChanged(qint32)),this,SLOT(remainingChanged(qint32)));
     connect(pom.get(),SIGNAL(stateChanged(State)),this,SLOT(stateChanged(State)));
     pixmap.load(":/icons/tomato.svg");
@@ -25,12 +26,12 @@ TrayIcon::TrayIcon(QObject *parent) : QObject(parent)
     tray.setContextMenu(&menu);
     connect(&tray,SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
             this, SLOT(trayActivated(QSystemTrayIcon::ActivationReason)));
+    connect(mainwindow,SIGNAL(showSettings()),this,SLOT(showSettingsDialog()));
     tray.show();
 }
 
 TrayIcon::~TrayIcon()
 {
-    if (settingsDialog) delete settingsDialog;
     delete mainwindow;
 }
 
@@ -63,21 +64,26 @@ void TrayIcon::stateChanged(State state)
     switch (state) {
     case State::PAUSED:
         paintText("॥");
+        sounds->stopTickcing();
         menu.actions()[1]->setVisible(true);
         menu.actions()[1]->setText("Continue");
         menu.actions()[0]->setVisible(false);
         break;
     case State::STOPPED:
         paintText("");
+        sounds->stopTickcing();
         menu.actions()[1]->setVisible(false);
         menu.actions()[2]->setVisible(false);
         menu.actions()[0]->setVisible(true);
         break;
     case State::ACTIVE:
         if (pom->prevState() == State::SHORT_BREAK||
-                pom->prevState() == State::LONG_BREAK)
+                pom->prevState() == State::LONG_BREAK){
             tray.showMessage(tr("It's time for a new pomodoro"),
                              tr("Get to work!"));
+            sounds->playNewPomodoro();
+        }
+        sounds->startTicking();
         if (pom->pauseIsAllowed()){
             menu.actions()[1]->setVisible(true);
             menu.actions()[1]->setText("Pause");
@@ -87,12 +93,15 @@ void TrayIcon::stateChanged(State state)
         break;
     case State::SHORT_BREAK:
     case State::LONG_BREAK:
-        tray.showMessage(tr("Have a break!"),
+        sounds->playBreak();
+        sounds->stopTickcing();
+        tray.showMessage(tr("Take a break!"),
                          tr(""));
         menu.actions()[1]->setVisible(false);
         menu.actions()[0]->setVisible(true);
         break;
     default:
+        sounds->stopTickcing();
         menu.actions()[1]->setVisible(true);
         menu.actions()[1]->setText("Pause");
         menu.actions()[0]->setVisible(true);
@@ -120,7 +129,7 @@ void TrayIcon::trayActivated(QSystemTrayIcon::ActivationReason reason)
 void TrayIcon::showSettingsDialog()
 {
     if (!settingsDialog){
-        settingsDialog = new SettingsDialog (settings);
+        settingsDialog = std::make_shared<SettingsDialog> (settings);
     }
     settingsDialog->show();
 }

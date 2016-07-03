@@ -4,6 +4,8 @@
 #include <pomodoro.h>
 #include <memory>
 #include <QVariant>
+#include <QUrl>
+#include <sounds.h>
 class Settings : public QObject
 {
     Q_OBJECT
@@ -12,14 +14,14 @@ class Settings : public QObject
     Q_PROPERTY(quint32 longBreakDuration READ longBreakDuration WRITE setLongBreakDuration NOTIFY longBreakDurationChanged)
     Q_PROPERTY(bool autoContinue READ autoContinue WRITE setAutoContinue NOTIFY autoContinueChanged)
     Q_PROPERTY(bool allowPause READ allowPause WRITE setAllowPause NOTIFY allowPauseChanged)
-    Q_PROPERTY(bool playTicks READ playTicks WRITE setPlayTicks NOTIFY playTicksChanged)
-    Q_PROPERTY(QString ticksSound READ ticksSound WRITE setTicksSound NOTIFY ticksSoundChanged)
+    Q_PROPERTY(bool playticking READ playticking WRITE setPlayticking NOTIFY playtickingChanged)
+    Q_PROPERTY(QUrl tickingSound READ tickingSound WRITE settickingSound NOTIFY tickingSoundChanged)
     Q_PROPERTY(bool playBreakSound READ playBreakSound WRITE setPlayBreakSound NOTIFY playBreakSoundChanged)
-    Q_PROPERTY(QString breakSound READ breakSound WRITE setBreakSound NOTIFY breakSoundChanged)
+    Q_PROPERTY(QUrl breakSound READ breakSound WRITE setBreakSound NOTIFY breakSoundChanged)
     Q_PROPERTY(bool playPomodoroSound READ playPomodoroSound WRITE setPlayPomodoroSound NOTIFY playPomodoroSoundChanged)
-    Q_PROPERTY(QString pomodoroSound READ pomodoroSound WRITE setPomodoroSound NOTIFY pomodoroSoundChanged)
+    Q_PROPERTY(QUrl pomodoroSound READ pomodoroSound WRITE setPomodoroSound NOTIFY pomodoroSoundChanged)
 public:
-    explicit Settings(std::weak_ptr<Pomodoro> pom, QObject *parent = 0);
+    explicit Settings(std::weak_ptr<Pomodoro> pom, std::weak_ptr<Sounds> sounds, QObject *parent = 0);
 
     quint32 duration() const
     {
@@ -46,14 +48,14 @@ public:
         return m_allowPause;
     }
 
-    bool playTicks() const
+    bool playticking() const
     {
-        return m_playTicks;
+        return m_playticking;
     }
 
-    QString ticksSound() const
+    QUrl tickingSound() const
     {
-        return m_ticksSound;
+        return m_tickingSound;
     }
 
     bool playBreakSound() const
@@ -61,7 +63,7 @@ public:
         return m_playBreakSound;
     }
 
-    QString breakSound() const
+    QUrl breakSound() const
     {
         return m_breakSound;
     }
@@ -71,7 +73,7 @@ public:
         return m_playPomodoroSound;
     }
 
-    QString pomodoroSound() const
+    QUrl pomodoroSound() const
     {
         return m_pomodoroSound;
     }
@@ -88,17 +90,17 @@ signals:
 
     void allowPauseChanged(bool allowPause);
 
-    void playTicksChanged(bool playTicks);
+    void playtickingChanged(bool playticking);
 
-    void ticksSoundChanged(QString ticksSound);
+    void tickingSoundChanged(QUrl tickingSound);
 
     void playBreakSoundChanged(bool playBreakSound);
 
-    void breakSoundChanged(QString breakSound);
+    void breakSoundChanged(QUrl breakSound);
 
     void playPomodoroSoundChanged(bool playPomodoroSound);
 
-    void pomodoroSoundChanged(QString pomodoroSound);
+    void pomodoroSoundChanged(QUrl pomodoroSound);
 
 public slots:
 
@@ -112,17 +114,17 @@ void setAutoContinue(bool autoContinue);
 
 void setAllowPause(bool allowPause);
 
-void setPlayTicks(bool playTicks);
+void setPlayticking(bool playticking);
 
-void setTicksSound(QString ticksSound);
+void settickingSound(QUrl tickingSound);
 
 void setPlayBreakSound(bool playBreakSound);
 
-void setBreakSound(QString breakSound);
+void setBreakSound(QUrl breakSound);
 
 void setPlayPomodoroSound(bool playPomodoroSound);
 
-void setPomodoroSound(QString pomodoroSound);
+void setPomodoroSound(QUrl pomodoroSound);
 
 private:
 quint32 m_duration;
@@ -130,12 +132,12 @@ quint32 m_shortBreakDuration;
 quint32 m_longBreakDuration;
 bool m_autoContinue;
 bool m_allowPause;
-bool m_playTicks;
-QString m_ticksSound;
+bool m_playticking;
+QUrl m_tickingSound;
 bool m_playBreakSound;
-QString m_breakSound;
+QUrl m_breakSound;
 bool m_playPomodoroSound;
-QString m_pomodoroSound;
+QUrl m_pomodoroSound;
 
 template <class T>
 void trytoget(const char *key, T& var, const T& def){
@@ -151,6 +153,7 @@ void trytoget(const char *key, T& var, const T& def){
 
 
 std::weak_ptr<Pomodoro> pom;
+std::weak_ptr<Sounds> sounds;
 QSettings settings;
 };
 

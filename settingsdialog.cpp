@@ -38,9 +38,9 @@ void SettingsDialog::accept()
                     ui->longBreakDurationTE->time().msecsSinceStartOfDay()
                     );
         settings_lock->setPlayBreakSound(ui->breakSoundEnabled->isChecked());
-        settings_lock->setPlayTicks(ui->tickingSoundEnabled->isChecked());
+        settings_lock->setPlayticking(ui->tickingSoundEnabled->isChecked());
         settings_lock->setPlayPomodoroSound(ui->newPomodoroSoundEnabled->isChecked());
-        settings_lock->setTicksSound(QUrl(ui->tickingSoundLE->text()));
+        settings_lock->settickingSound(QUrl(ui->tickingSoundLE->text()));
         settings_lock->setBreakSound(QUrl(ui->breakSoundLE->text()));
         settings_lock->setPomodoroSound(QUrl(ui->newPomodoroSoundLE->text()));
     }
@@ -66,11 +66,11 @@ void SettingsDialog::reset()
         ui->pomodoroDurationTE->setTime(QTime::fromMSecsSinceStartOfDay(
                                             settings_lock->duration()));
         ui->breakSoundEnabled->setChecked(settings_lock->playBreakSound());
-        ui->tickingSoundEnabled->setChecked(settings_lock->playTicks());
+        ui->tickingSoundEnabled->setChecked(settings_lock->playticking());
         ui->newPomodoroSoundEnabled->setChecked(settings_lock->playPomodoroSound());
         ui->newPomodoroSoundLE->setText(settings_lock->pomodoroSound().toString());
         ui->breakSoundLE->setText(settings_lock->breakSound().toString());
-        ui->tickingSoundLE->setText(settings_lock->ticksSound().toString());
+        ui->tickingSoundLE->setText(settings_lock->tickingSound().toString());
     }
 }
 

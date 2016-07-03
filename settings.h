@@ -1,11 +1,10 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 #include <QSettings>
-#include <pomodoro.h>
 #include <memory>
 #include <QVariant>
 #include <QUrl>
-#include <sounds.h>
+#include <utils.h>
 class Settings : public QObject
 {
     Q_OBJECT
@@ -21,7 +20,7 @@ class Settings : public QObject
     Q_PROPERTY(bool playPomodoroSound READ playPomodoroSound WRITE setPlayPomodoroSound NOTIFY playPomodoroSoundChanged)
     Q_PROPERTY(QUrl pomodoroSound READ pomodoroSound WRITE setPomodoroSound NOTIFY pomodoroSoundChanged)
 public:
-    explicit Settings(std::weak_ptr<Pomodoro> pom, std::weak_ptr<Sounds> sounds, QObject *parent = 0);
+    explicit Settings(QObject *parent = 0);
 
     quint32 duration() const
     {
@@ -126,6 +125,8 @@ void setPlayPomodoroSound(bool playPomodoroSound);
 
 void setPomodoroSound(QUrl pomodoroSound);
 
+void load();
+
 private:
 quint32 m_duration;
 quint32 m_shortBreakDuration;
@@ -140,21 +141,19 @@ bool m_playPomodoroSound;
 QUrl m_pomodoroSound;
 
 template <class T>
-void trytoget(const char *key, T& var, const T& def){
+void trytoget(const char *key, void (Settings::*var_setter)(T), const T& def){
     QVariant val = settings.value(key);
     if (!val.isNull() && val.canConvert<T>()){
-        var = val.value<T>();
+        (this->*var_setter)(val.value<T>());
     }
     else {
-        var = def;
+        (this->*var_setter)(def);
         settings.setValue(key,def);
     }
 }
 
-
-std::weak_ptr<Pomodoro> pom;
-std::weak_ptr<Sounds> sounds;
 QSettings settings;
 };
+
 
 #endif // SETTINGS_H

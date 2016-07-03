@@ -3,7 +3,7 @@
 #include <QDebug>
 #include <QPalette>
 #include <math.h>
-MainWindow::MainWindow(std::weak_ptr<Pomodoro> pom, QWidget *parent) :
+MainWindow::MainWindow(std::weak_ptr<Pomodoro> pom, std::shared_ptr<Settings> settings, QWidget *parent) :
     QMainWindow(parent),
     //    pom (3000, 2000, 1000,this),
     pom (pom),
@@ -19,6 +19,8 @@ MainWindow::MainWindow(std::weak_ptr<Pomodoro> pom, QWidget *parent) :
         connect(pom_locked.get(),SIGNAL(remainingChanged(qint32)),this, SLOT(showRemaining(qint32)));
     }
     connect(ui->settings, SIGNAL(clicked(bool)),this,SIGNAL(showSettings()));
+    ui->pause->setEnabled(settings->allowPause());
+    connect(settings.get(), SIGNAL(allowPauseChanged(bool)),this,SLOT(allowPauseChanged(bool)));
 }
 
 MainWindow::~MainWindow()

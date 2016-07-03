@@ -2,7 +2,7 @@ TEMPLATE = app
 
 QT += widgets multimedia
 
-CONFIG += c++14
+CONFIG += c++11
 
 SOURCES += main.cpp \
     pomodoro.cpp \

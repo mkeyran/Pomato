@@ -6,10 +6,11 @@
 #include <QDebug>
 TrayIcon::TrayIcon(QObject *parent) : QObject(parent)
 {
-    pom = std::make_shared<Pomodoro>(this);
-    sounds = std::make_shared<Sounds>(this);
-    settings = std::make_shared<Settings>(pom, sounds, this);
-    mainwindow = new MainWindow(pom);
+    settings = std::make_shared<Settings>(this);
+    sounds = std::make_shared<Sounds>(settings,this);
+    pom = std::make_shared<Pomodoro>(settings,this);
+    mainwindow = new MainWindow(pom, settings);
+    settings->load();
     connect(pom.get(),SIGNAL(remainingChanged(qint32)),this,SLOT(remainingChanged(qint32)));
     connect(pom.get(),SIGNAL(stateChanged(State)),this,SLOT(stateChanged(State)));
     pixmap.load(":/icons/tomato.svg");
@@ -84,7 +85,7 @@ void TrayIcon::stateChanged(State state)
             sounds->playNewPomodoro();
         }
         sounds->startTicking();
-        if (pom->pauseIsAllowed()){
+        if (settings->allowPause()){
             menu.actions()[1]->setVisible(true);
             menu.actions()[1]->setText("Pause");
         }

@@ -1,15 +1,20 @@
 #include "sounds.h"
 
-Sounds::Sounds(QObject *parent) : QObject(parent)
+Sounds::Sounds(std::shared_ptr<Settings> settings, QObject *parent) : QObject(parent),
+    settings(settings)
 {
     connect(&tickingPlayer,SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)),
             this,SLOT(repeatTicking(QMediaPlayer::MediaStatus)));
+    connect(settings.get(), SIGNAL(playtickingChanged(bool)),this,SLOT(setTickingEnabled(bool)));
+    connect(settings.get(), SIGNAL(breakSoundChanged(QUrl)),this,SLOT(setBreakFileName(QUrl)));
+    connect(settings.get(), SIGNAL(tickingSoundChanged(QUrl)),this, SLOT(setTickingFileName(QUrl)));
+    connect(settings.get(), SIGNAL(pomodoroSoundChanged(QUrl)), this, SLOT(setNewPomodoroFileName(QUrl)));
 }
 
 void Sounds::startTicking()
 {
     shouldTick = true;
-    if (tickingEnabled && tickingPlayer.isAudioAvailable()){
+    if (settings->playticking() && tickingPlayer.isAudioAvailable()){
         tickingPlayer.play();
     }
 }
@@ -27,7 +32,7 @@ void Sounds::setTickingFileName(QUrl filename)
 
 void Sounds::playNewPomodoro()
 {
-    if (newPomodoroEnabled && newPomodoroPlayer.isAudioAvailable())
+    if (settings->playPomodoroSound() && newPomodoroPlayer.isAudioAvailable())
         newPomodoroPlayer.play();
 }
 
@@ -38,7 +43,7 @@ void Sounds::setNewPomodoroFileName(QUrl filename)
 
 void Sounds::playBreak()
 {
-    if (breakEnabled && breakPlayer.isAudioAvailable()){
+    if (settings->playBreakSound() && breakPlayer.isAudioAvailable()){
         breakPlayer.play();
     }
 }
@@ -50,7 +55,6 @@ void Sounds::setBreakFileName(QUrl filename)
 
 void Sounds::setTickingEnabled(bool enabled)
 {
-    tickingEnabled = enabled;
     if (shouldTick && enabled){
         if (tickingPlayer.state() !=  QMediaPlayer::PlayingState) {
              tickingPlayer.play();
@@ -62,17 +66,6 @@ void Sounds::setTickingEnabled(bool enabled)
         }
     }
 }
-
-void Sounds::setNewPomodoroEnabled(bool enabled)
-{
-    newPomodoroEnabled = enabled;
-}
-
-void Sounds::setBreakEnabled(bool enabled)
-{
-    breakEnabled = enabled;
-}
-
 void Sounds::repeatTicking(QMediaPlayer::MediaStatus status)
 {
     if (status == QMediaPlayer::EndOfMedia){

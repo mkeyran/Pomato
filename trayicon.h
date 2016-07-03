@@ -10,6 +10,7 @@
 #include <memory>
 #include <settings.h>
 #include <settingsdialog.h>
+#include <sounds.h>
 class TrayIcon : public QObject
 {
     Q_OBJECT
@@ -35,7 +36,8 @@ private:
     QMediaPlayer ticks;
     MainWindow *mainwindow;
     std::shared_ptr<Settings> settings;
-    SettingsDialog *settingsDialog;
+    std::shared_ptr<SettingsDialog> settingsDialog;
+    std::shared_ptr<Sounds> sounds;
 };
 
 #endif // TRAYICON_H

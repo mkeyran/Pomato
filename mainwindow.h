@@ -20,6 +20,10 @@ public:
 public slots:
     void exit();
     void pomodoroStateChanged(State state);
+    void showRemaining(qint32 rem);
+    void allowPauseChanged(bool allow);
+signals:
+    void showSettings();
 private:
     std::weak_ptr<Pomodoro> pom;
     Ui::MainWindow *ui;

@@ -2,16 +2,18 @@ TEMPLATE = app
 
 QT += widgets multimedia
 
-CONFIG += c++11
+CONFIG += c++14
 
 SOURCES += main.cpp \
     pomodoro.cpp \
     trayicon.cpp \
     mainwindow.cpp \
     settings.cpp \
-    settingsdialog.cpp
+    settingsdialog.cpp \
+    sounds.cpp
 
-RESOURCES += qml.qrc
+RESOURCES += \
+    resources.qrc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
@@ -24,9 +26,9 @@ HEADERS += \
     trayicon.h \
     mainwindow.h \
     settings.h \
-    settingsdialog.h
-
-QMAKE_CXXFLAGS += --std=c++11
+    settingsdialog.h \
+    sounds.h \
+    utils.h
 
 FORMS += \
     mainwindow.ui \

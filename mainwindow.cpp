@@ -7,6 +7,7 @@ MainWindow::MainWindow(std::weak_ptr<Pomodoro> pom, std::shared_ptr<Settings> se
     QMainWindow(parent),
     //    pom (3000, 2000, 1000,this),
     pom (pom),
+    settings(settings),
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
@@ -19,8 +20,9 @@ MainWindow::MainWindow(std::weak_ptr<Pomodoro> pom, std::shared_ptr<Settings> se
         connect(pom_locked.get(),SIGNAL(remainingChanged(qint32)),this, SLOT(showRemaining(qint32)));
     }
     connect(ui->settings, SIGNAL(clicked(bool)),this,SIGNAL(showSettings()));
-    ui->pause->setEnabled(settings->allowPause());
     connect(settings.get(), SIGNAL(allowPauseChanged(bool)),this,SLOT(allowPauseChanged(bool)));
+    ui->pause->setEnabled(false);
+    ui->stop->setEnabled(false);
 }
 
 MainWindow::~MainWindow()
@@ -54,6 +56,8 @@ void MainWindow::showRemaining(qint32 rem)
                                .arg(seconds,2,10,QLatin1Char('0')));
             palette.setColor(QPalette::WindowText, Qt::red);
             ui->label->setPalette(palette);
+            if (settings->allowPause()) ui->pause->setEnabled(true);
+            ui->stop->setEnabled(true);
             break;
         case State::SHORT_BREAK:
         case State::LONG_BREAK:
@@ -64,10 +68,13 @@ void MainWindow::showRemaining(qint32 rem)
             palette.setColor(QPalette::WindowText, Qt::green);
             ui->label->setPalette(palette);
             break;
+            ui->pause->setEnabled(false);
         default:
             ui->label->setText(tr("--:--:--"));
             palette.setColor(QPalette::WindowText, Qt::green);
             ui->label->setPalette(palette);
+            ui->pause->setEnabled(false);
+            ui->stop->setEnabled(false);
             break;
         }
     }
@@ -75,5 +82,8 @@ void MainWindow::showRemaining(qint32 rem)
 
 void MainWindow::allowPauseChanged(bool allow)
 {
-    ui->pause->setEnabled(allow);
+    if (auto pom_locked = pom.lock()){
+    if (allow==true && (pom_locked->state()==State::ACTIVE)) ui->pause->setEnabled(allow);
+    else ui->pause->setEnabled(false);
+    }
 }

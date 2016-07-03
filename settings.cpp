@@ -18,8 +18,6 @@ Settings::Settings(QObject *parent) : QObject(parent),
 {
 }
 
-
-
 void Settings::setDuration(quint32 duration)
 {
     if (m_duration == duration)

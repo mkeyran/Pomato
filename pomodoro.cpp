@@ -1,5 +1,7 @@
 #include "pomodoro.h"
 #include <cmath>
+#include <QDebug>
+#include <QTime>
 
 Pomodoro::Pomodoro(QObject *parent) : Pomodoro(1000*60*25,1000*60*5,1000*60*15,parent)
 {
@@ -19,7 +21,8 @@ Pomodoro::Pomodoro(quint32 pomodoroDuration, quint32 shortBreakDuration, quint32
 //    timer.setTimerType(Qt::VeryCoarseTimer);
     timer.setSingleShot(true);
     connect(&timer,SIGNAL(timeout()),this,SLOT(nextState()));
-    passed_timer.setInterval(1000);
+    passed_timer.setTimerType(Qt::PreciseTimer);
+    passed_timer.setInterval(500);
     connect(&passed_timer,SIGNAL(timeout()),this,SLOT(notifyRemaining()));
     passed_timer.start();
 
@@ -58,14 +61,14 @@ bool Pomodoro::autoContinue() const
 qint32 Pomodoro::passed() const
 {
     qint32 _passed = passedTime();
-    if (_passed != -1) _passed = std::floor(1. * _passed / 1000.);
+    if (_passed != -1) _passed = std::ceil(1. * _passed / 1000.);
     return _passed;
 }
 
 qint32 Pomodoro::remaining() const
 {
     qint32 _remaining = remainingTime();
-    if (_remaining != -1) _remaining = std::ceil(1. * _remaining / 1000.);
+    if (_remaining != -1) _remaining = std::floor(1. * _remaining / 1000.);
     return _remaining;
 }
 
@@ -82,6 +85,7 @@ void Pomodoro::setState(State state)
         return;
     setPrevState(m_state);
     m_state = state;
+    notifyRemaining();
     emit stateChanged(state);
 }
 
@@ -136,8 +140,8 @@ void Pomodoro::start(State state)
     default:
         return;
     }
-    setState(state);
     timer.start();
+    setState(state);
 }
 
 void Pomodoro::stop()
@@ -156,9 +160,9 @@ void Pomodoro::pause()
         setState(State::ACTIVE);
     }
     else {
-        setState(State::PAUSED);
         pauseRemaining = timer.remainingTime();
         timer.stop();
+        setState(State::PAUSED);
     }
 }
 
@@ -173,7 +177,16 @@ void Pomodoro::setAutoContinue(bool autoContinue)
 
 qint32 Pomodoro::remainingTime() const
 {
-    return timer.remainingTime();
+    switch (state()) {
+    case State::ACTIVE:
+    case State::SHORT_BREAK:
+    case State::LONG_BREAK:
+        return timer.remainingTime();
+    case State::PAUSED:
+        return pauseRemaining;
+    default:
+        return -1;
+    }
 }
 
 qint32 Pomodoro::passedTime() const
@@ -203,8 +216,8 @@ void Pomodoro::nextState()
         pomodorosAmount+=1;
         if (pomodorosAmount % 4 == 0){ //Long break
             timer.setInterval(longBreakDuration());
-            setState(State::LONG_BREAK);
             timer.start();
+            setState(State::LONG_BREAK);
         }
         else{
             timer.setInterval(shortBreakDuration());

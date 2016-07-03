@@ -2,7 +2,6 @@
 #define POMODORO_H
 #include <QObject>
 #include <QTimer>
-
 enum class State {STOPPED, ACTIVE, SHORT_BREAK, LONG_BREAK, PAUSED};
 
 class Pomodoro : public QObject

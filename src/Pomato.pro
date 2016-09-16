@@ -30,8 +30,14 @@ HEADERS += \
     sounds.h \
     utils.h
 
-INCLUDEPATH += src
 
 FORMS += \
     mainwindow.ui \
     settingsdialog.ui
+
+INCLUDEPATH += \
+            /usr/include/c++/6.2.1 \
+            src \
+            ../libs/UGlobalHotkey
+
+LIBS += -L../libs/UGlobalHotkey -lUGlobalHotkey

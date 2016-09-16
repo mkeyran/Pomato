@@ -4,16 +4,16 @@
 #include <QDialog>
 #include <settings.h>
 #include <memory>
+
 namespace Ui {
-class SettingsDialog;
+    class SettingsDialog;
 }
 
-class SettingsDialog : public QDialog
-{
+class SettingsDialog : public QDialog {
     Q_OBJECT
 
 public:
-    explicit SettingsDialog(std::weak_ptr<Settings> settings, QWidget *parent = 0);
+    explicit SettingsDialog (std::weak_ptr<Settings> settings, QWidget *parent = 0);
     ~SettingsDialog();
 
 private slots:

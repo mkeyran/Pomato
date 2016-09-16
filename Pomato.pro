@@ -4,16 +4,16 @@ QT += widgets multimedia
 
 CONFIG += c++11
 
-SOURCES += main.cpp \
-    pomodoro.cpp \
-    trayicon.cpp \
-    mainwindow.cpp \
-    settings.cpp \
-    settingsdialog.cpp \
-    sounds.cpp
+SOURCES += src/main.cpp \
+    src/pomodoro.cpp \
+    src/trayicon.cpp \
+    src/mainwindow.cpp \
+    src/settings.cpp \
+    src/settingsdialog.cpp \
+    src/sounds.cpp
 
 RESOURCES += \
-    resources.qrc
+    resources/resources.qrc
 
 # Additional import path used to resolve QML modules in Qt Creator's code model
 QML_IMPORT_PATH =
@@ -22,14 +22,16 @@ QML_IMPORT_PATH =
 include(deployment.pri)
 
 HEADERS += \
-    pomodoro.h \
-    trayicon.h \
-    mainwindow.h \
-    settings.h \
-    settingsdialog.h \
-    sounds.h \
-    utils.h
+    src/pomodoro.h \
+    src/trayicon.h \
+    src/mainwindow.h \
+    src/settings.h \
+    src/settingsdialog.h \
+    src/sounds.h \
+    src/utils.h
+
+INCLUDEPATH += src
 
 FORMS += \
-    mainwindow.ui \
-    settingsdialog.ui
+    src/mainwindow.ui \
+    src/settingsdialog.ui

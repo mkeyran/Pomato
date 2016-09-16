@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file alias="tomato.svg">Icons/tomato.svg</file>
+    </qresource>
+</RCC>

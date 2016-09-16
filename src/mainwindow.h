@@ -7,28 +7,27 @@
 #include <memory>
 #include <settings.h>
 namespace Ui {
-class MainWindow;
+    class MainWindow;
 }
 
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
-    explicit MainWindow(std::weak_ptr<Pomodoro> pom, std::shared_ptr<Settings> settings, QWidget *parent = 0);
+    explicit MainWindow (std::weak_ptr<Pomodoro> pom, std::shared_ptr<Settings> settings, QWidget *parent = 0);
     ~MainWindow();
 
 public slots:
     void exit();
-    void pomodoroStateChanged(State state);
-    void showRemaining(qint32 rem);
-    void allowPauseChanged(bool allow);
+    void pomodoroStateChanged (State state);
+    void showRemaining (qint32 rem);
+    void allowPauseChanged (bool allow);
 signals:
     void showSettings();
 private:
     std::weak_ptr<Pomodoro> pom;
-    Ui::MainWindow *ui;
     std::shared_ptr<Settings> settings;
+    Ui::MainWindow *ui;
 };
 
 #endif // MAINWINDOW_H

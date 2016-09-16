@@ -6,13 +6,13 @@ It is intended for use with system tray or notification area, although a simple 
 
 - System tray icon which display remaining time and allow control
 - Notifications (text and sound)
-- Ticking while pomodoro is active
+- Playing ticking sound while pomodoro is active
 - Simple GUI
 - Settings (Duration of pomodoro, short and long breaks, auto-continue mode and whether pauses are allowed).
+- Global hotkeys
 
 #### Planned features:
     
-- Global hotkeys
 - Some kind of statistics
 - Visual styles
 - Tasks

@@ -1,0 +1,3 @@
+[submodule "libs/UGlobalHotkey"]
+	path = libs/UGlobalHotkey
+	url = git@github.com:falceeffect/UGlobalHotkey.git

@@ -41,3 +41,6 @@ INCLUDEPATH += \
             ../libs/UGlobalHotkey
 
 LIBS += -L../libs/UGlobalHotkey -lUGlobalHotkey
+
+target.path = /usr/bin
+INSTALLS += target

@@ -1,6 +1,6 @@
 ### A simple pomodoro timer written in Qt5
 
-It is intended for use with system tray or notification area, although a simple window is provided (perhaps, in future, it will be the default operation mode).
+It is intended for use with system tray or notification area, although a simple window is provided (perhaps, in the future, it will be the default operation mode).
 
 #### Current features:
 

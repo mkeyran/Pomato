@@ -14,6 +14,7 @@
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
+    app.setQuitOnLastWindowClosed(false);
     TrayIcon m;
 //    m.show();
     return app.exec();
